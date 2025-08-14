@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reports</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+</head>
+<body class="page-body">
+
+  <!-- 🔹 Header -->
+  <header class="page-header">
+    <h2>Reports</h2>
+    <button class="back-btn" onclick="window.location.href='dashboard.html'">← Back</button>
+  </header>
+
+  <!-- 🔍 Filter + Search -->
+  <main class="page-main">
+    <div class="filter-bar">
+      <select id="report-type-filter">
+        <option value="all">All Types</option>
+        <option value="lab">Lab</option>
+        <option value="radiology">Radiology</option>
+        <option value="prescription">Prescription</option>
+      </select>
+      <input type="text" placeholder="Search by report title..." />
+    </div>
+
+    <!-- 📋 Table -->
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th><i class="fas fa-file-medical"></i> Title</th>
+          <th><i class="fas fa-user"></i> Patient</th>
+          <th><i class="fas fa-calendar-alt"></i> Date</th>
+          <th><i class="fas fa-tags"></i> Type</th>
+          <th><i class="fas fa-eye"></i> Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td data-label="Title">Blood Test</td>
+          <td data-label="Patient">Ali Raza</td>
+          <td data-label="Date">2025-08-09</td>
+          <td data-label="Type">Lab</td>
+          <td data-label="Actions">
+            <button class="action-btn" onclick="openModal('Blood Test', 'Ali Raza', '2025-08-09', 'Lab')">View</button>
+          </td>
+        </tr>
+        <tr>
+          <td data-label="Title">X-Ray Chest</td>
+          <td data-label="Patient">Sara Khan</td>
+          <td data-label="Date">2025-08-08</td>
+          <td data-label="Type">Radiology</td>
+          <td data-label="Actions">
+            <button class="action-btn" onclick="openModal('X-Ray Chest', 'Sara Khan', '2025-08-08', 'Radiology')">View</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- 🔢 Pagination -->
+    <div class="pagination">
+      <button>&laquo;</button>
+      <button class="active">1</button>
+      <button>2</button>
+      <button>3</button>
+      <button>&raquo;</button>
+    </div>
+  </main>
+
+  <!-- 🔍 Modal -->
+  <div id="details-modal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeModal()">&times;</span>
+      <h3>Report Details</h3>
+      <p><strong>Title:</strong> <span id="modal-title"></span></p>
+      <p><strong>Patient:</strong> <span id="modal-patient"></span></p>
+      <p><strong>Date:</strong> <span id="modal-date"></span></p>
+      <p><strong>Type:</strong> <span id="modal-type"></span></p>
+    </div>
+  </div>
+
+  <!-- 🔧 Modal Script -->
+  <script>
+    function openModal(title, patient, date, type) {
+      document.getElementById("modal-title").textContent = title;
+      document.getElementById("modal-patient").textContent = patient;
+      document.getElementById("modal-date").textContent = date;
+      document.getElementById("modal-type").textContent = type;
+      document.getElementById("details-modal").style.display = "block";
+    }
+
+    function closeModal() {
+      document.getElementById("details-modal").style.display = "none";
+    }
+
+    window.onclick = function(event) {
+      const modal = document.getElementById("details-modal");
+      if (event.target === modal) {
+        modal.style.display = "none";
+      }
+    };
+  </script>
+  <!-- 💬 Floating Chat Icon -->
+<div id="chat-launcher" onclick="toggleChat()">
+  <i class="fas fa-comment-dots"></i>
+</div>
+
+<!-- 🧠 Chat Window -->
+<div id="chat-box" class="chat-hidden">
+  <div class="chat-header">MediBot</div>
+  <div class="chat-body" id="chat-body">
+    <div class="bot-msg">Hi! How can I help you today?</div>
+  </div>
+  <div class="chat-footer">
+    <input type="text" id="chat-input" placeholder="Type your question..." />
+    <button onclick="sendMessage()">Send</button>
+  </div>
+</div>
+
+<!-- 🔧 Chatbot Script -->
+<script src="js/main.js"></script>
+
+</body>
+</html>

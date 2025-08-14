@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MediConnect Dashboard</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body style="margin:0; font-family:sans-serif; background-color:#f9f9f9;">
+
+  <!-- 🔹 Header -->
+  <header style="display:flex; justify-content:space-between; align-items:center; padding:15px 25px; background-color:#e6f2ff;">
+    <h2 style="margin:0;">Dashboard</h2>
+    <button onclick="handleLogout()" id="logout-btn" style="padding:8px 16px; background-color:#dc3545; color:white; border:none; border-radius:4px;">Logout</button>
+  </header>
+
+  <!-- 🔹 Dashboard Tabs -->
+  <main style="padding:40px; text-align:center;">
+    <h3 style="margin-bottom:30px;">Choose an action</h3>
+
+    <button id="appointments-btn" style="margin:10px; padding:12px 24px; font-size:16px; background-color:#007bff; color:white; border:none; border-radius:6px;">Appointments</button>
+
+    <button id="patients-btn" style="margin:10px; padding:12px 24px; font-size:16px; background-color:#28a745; color:white; border:none; border-radius:6px;">Patients</button>
+
+    <button id="reports-btn" style="margin:10px; padding:12px 24px; font-size:16px; background-color:#17a2b8; color:white; border:none; border-radius:6px;">Reports</button>
+  </main>
+
+  <!-- 🔹 Dummy Data Section -->
+  <section style="padding:20px;">
+    <h4>Dashboard Stats</h4>
+    <ul>
+      <li>Total Appointments: 12</li>
+      <li>Registered Patients: 45</li>
+      <li>Reports Generated: 8</li>
+    </ul>
+  </section>
+
+  <!-- 💬 Floating Chat Icon -->
+  <div id="chat-launcher" onclick="toggleChat()" style="position:fixed; bottom:20px; right:20px; background-color:#007bff; color:white; padding:12px; border-radius:50%; cursor:pointer;">
+    <i class="fas fa-comment-dots"></i>
+  </div>
+
+  <!-- 🧠 Chat Window -->
+  <div id="chat-box" class="chat-hidden" style="position:fixed; bottom:80px; right:20px; width:300px; background:white; border:1px solid #ccc; border-radius:8px; box-shadow:0 4px 8px rgba(0,0,0,0.1);">
+    <div class="chat-header" style="background-color:#007bff; color:white; padding:10px; border-top-left-radius:8px; border-top-right-radius:8px;">MediBot</div>
+    <div class="chat-body" id="chat-body" style="padding:10px; max-height:200px; overflow-y:auto;">
+      <div class="bot-msg">Hi! How can I help you today?</div>
+    </div>
+    <div class="chat-footer" style="display:flex; padding:10px; border-top:1px solid #ccc;">
+      <input type="text" id="chat-input" placeholder="Type your question..." style="flex:1; padding:6px; border:1px solid #ccc; border-radius:4px;" />
+      <button onclick="sendMessage()" style="margin-left:8px; padding:6px 12px; background-color:#007bff; color:white; border:none; border-radius:4px;">Send</button>
+    </div>
+  </div>
+
+  <!-- 🔹 JS Logic -->
+  <script src="js/dashboard.js"></script>
+</body>
+</html>

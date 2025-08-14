@@ -1,0 +1,27 @@
+{
+  "en": {
+    "heading": "Welcome to MediConnect",
+    "paragraph": "Your health, your choice. Find the right specialist now.",
+    "getStarted": "Get Started"
+  },
+  "ur": {
+    "heading": "میڈی کنیکٹ میں خوش آمدید",
+    "paragraph": "آپ کی صحت، آپ کا انتخاب۔ صحیح ماہر تلاش کریں۔",
+    "getStarted": "شروع کریں"
+  },
+  "hi": {
+    "heading": "मेडिकनेक्ट में आपका स्वागत है",
+    "paragraph": "आपका स्वास्थ्य, आपकी पसंद। सही विशेषज्ञ खोजें।",
+    "getStarted": "शुरू करें"
+  },
+  "fr": {
+    "heading": "Bienvenue sur MediConnect",
+    "paragraph": "Votre santé, votre choix. Trouvez le bon spécialiste maintenant.",
+    "getStarted": "Commencer"
+  },
+  "ar": {
+    "heading": "مرحبًا بك في MediConnect",
+    "paragraph": "صحتك، اختيارك. ابحث عن الأخصائي المناسب الآن.",
+    "getStarted": "ابدأ"
+  }
+}

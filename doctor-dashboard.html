@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Doctor Dashboard</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      background: #eef2f7;
+    }
+    .top-bar {
+      text-align: center;
+      padding: 15px;
+      background: #ffffff;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      position: relative;
+    }
+    .logo {
+      height: 100px;
+      display: block;
+      margin: 0 auto;
+    }
+    .logout-btn {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      background: #e74c3c;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .dashboard-container {
+      display: flex;
+      gap: 20px;
+      padding: 20px;
+    }
+    .doctor-sidebar {
+      width: 250px;
+      background: #ffffff;
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+    }
+    .doctor-sidebar h3 {
+      margin-bottom: 10px;
+      font-size: 16px;
+      text-align: center;
+    }
+    .doctor-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+    .doctor-card {
+      background: #f0f4fa;
+      padding: 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      text-align: center;
+      font-size: 14px;
+      transition: 0.3s;
+    }
+    .doctor-card:hover {
+      background: #dbe9f4;
+    }
+    .main-content {
+      flex: 1;
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+    }
+    .tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .tab {
+      background: #3498db;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .tab:hover {
+      background: #2980b9;
+    }
+    .content-section {
+      display: none;
+    }
+    .active {
+      display: block;
+    }
+    .download-btn {
+      margin-top: 30px;
+      padding: 10px 20px;
+      background: #2ecc71;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .summary-block {
+      background: #f9f9fc;
+      padding: 15px;
+      margin-bottom: 15px;
+      border-radius: 8px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.03);
+    }
+    .summary-block h4 {
+      margin-top: 0;
+      color: #2c3e50;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="top-bar">
+    <img src="assets/logo.png" alt="Logo" class="logo" />
+    <button class="logout-btn" onclick="window.location.href='logout.html'">Logout</button>
+  </div>
+
+  <div class="dashboard-container">
+    <aside class="doctor-sidebar">
+      <h3>Select Doctor</h3>
+      <div class="doctor-grid">
+        <div class="doctor-card" onclick="loadDoctor('cardiology')">Dr. Zarrar Ahmed<br><small>Cardiologist</small></div>
+        <div class="doctor-card" onclick="loadDoctor('neurology')">Dr. Tahreem Ahmed<br><small>Neurologist</small></div>
+        <div class="doctor-card" onclick="loadDoctor('dermatology')">Dr. Usman Ahmed<br><small>Dermatologist</small></div>
+        <div class="doctor-card" onclick="loadDoctor('pediatrics')">Dr. Ayesha Tariq<br><small>Pediatrician</small></div>
+        <div class="doctor-card" onclick="loadDoctor('orthopedics')">Dr. Kamran Raza<br><small>Orthopedic</small></div>
+        <div class="doctor-card" onclick="loadDoctor('psychiatry')">Dr. Nadia Shah<br><small>Psychiatrist</small></div>
+        <div class="doctor-card" onclick="loadDoctor('ent')">Dr. Bilal Qureshi<br><small>ENT Specialist</small></div>
+        <div class="doctor-card" onclick="loadDoctor('ophthalmology')">Dr. Hina Malik<br><small>Eye Specialist</small></div>
+        <div class="doctor-card" onclick="loadDoctor('gastro')">Dr. Usman Farooq<br><small>Gastroenterologist</small></div>
+        <div class="doctor-card" onclick="loadDoctor('pulmonology')">Dr. Farah Javed<br><small>Pulmonologist</small></div>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <!-- Doctor Profile Section -->
+      <div id="doctorProfile" class="summary-block" style="display: none; text-align: center;">
+        <img id="doctorImage" src="" alt="Doctor" style="width:80px; height:80px; border-radius:50%; margin-bottom:10px;" />
+        <h4 id="doctorName"></h4>
+        <p id="doctorSpecialty"></p>
+      </div>
+
+      <div class="tabs">
+        <button class="tab" onclick="showSection('appointments')">Appointments</button>
+        <button class="tab" onclick="showSection('tests')">Tests</button>
+        <button class="tab" onclick="showSection('reports')">Reports</button>
+      </div>
+
+      <div id="appointments" class="content-section active"></div>
+      <div id="tests" class="content-section"></div>
+      <div id="reports" class="content-section"></div>
+
+      <button id="download-pdf-btn" class="download-btn">Download PDF</button>
+    </main>
+  </div>
+
+  <script>
+    const data = {
+      cardiology: {
+        name: "Dr. Zarrar Ahmed",
+        specialty: "Cardiologist",
+        image: "images/Dr. Zarrar Ahmed.jpg",
+        appointments: `<div class="summary-block"><h4>Ali Raza</h4><p>Chest pain, shortness of breath</p></div><div class="summary-block"><h4>Fatima</h4><p>Irregular heartbeat</p></div>`,
+        tests: `<div class="summary-block"><h4>ECG</h4><p>Scheduled for 12 Aug</p></div><div class="summary-block"><h4>BP</h4><p>140/90 mmHg</p></div>`,
+        reports: `<div class="summary-block"><h4>Diagnosis</h4><p>Hypertension</p></div><div class="summary-block"><h4>Prescription</h4><p>Beta blockers</p></div>`
+      },
+      neurology: {
+        name: "Dr. Tahreem Ahmed",
+        specialty: "Neurologist",
+        image: "images/Dr. Tahreem Ahmed.jpg",
+        appointments: `<div class="summary-block"><h4>Sara Malik</h4><p>Migraine, dizziness</p></div><div class="summary-block"><h4>Omar Sheikh</h4><p>Seizures, memory loss</p></div>`,
+        tests: `<div class="summary-block"><h4>MRI Brain</h4><p>Scheduled for 15 Aug</p></div><div class="summary-block"><h4>EEG</h4><p>Completed</p></div>`,
+        reports: `<div class="summary-block"><h4>Diagnosis</h4><p>Chronic migraine</p></div><div class="summary-block"><h4>Prescription</h4><p>Anti-migraine medication</p></div>`
+      },
+      dermatology: {
+        name: "Dr. Usman Ahmed",
+        specialty: "Dermatologist",
+        image: "images/Dr. Usman Ahmed.jpg",
+        appointments: `<div class="summary-block"><h4>Ali Khan</h4><p>Acne, rash</p></div><div class="summary-block"><h4>Sana Tariq</h4><p>Eczema, itching</p></div>`,
+        tests: `<div class="summary-block"><h4>Skin Biopsy</h4><p>Completed</p></div><div class="summary-block"><h4>Allergy Test</h4><p>Scheduled for 18 Aug</p></div>`,
+        reports: `<div class="summary-block"><h4>Diagnosis</h4><p>Dermatitis</p></div><div class="summary-block"><h4>Prescription</h4><p>Topical ointment</p></div>`
+      },
+      pediatrics: {
+        name: "Dr. Ayesha Tariq",
+        specialty: "Pediatrician",
+        image: "images/Dr. Ayesha Tariq.jpg",
+        appointments: `<div class="summary-block"><h4>Hassan Ali</h4><p>Fever, cough</p></div><div class="summary-block"><h4>Fatima Noor</h4><p>Routine vaccination</p></div>`,
+        tests: `<div class="summary-block"><h4>Blood Test</h4><p>Pending</p></div><div class="summary-block"><h4>Growth Chart</h4><p>Normal</p></div>`,
+        reports: `<div class="summary-block"><h4>Diagnosis</h4><p>Viral infection</p></div><div class="summary-block"><h4>Prescription</h4><p>Paracetamol syrup</p></div>`
+      },
+      orthopedics: {
+        name: "Dr. Kamran Raza",
+        specialty: "Orthopedic",
+        image: "images/Dr. Kamran Raza.jpg",
+        appointments: `<div class="summary-block"><h4>Imran Shah</h4><p>Knee pain, swelling</p></div><div class="summary-block"><h4>Rashid Mehmood</h4><p>Back pain</p></div>`,
+        tests: `<div class="summary-block"><h4>X-Ray Knee</h4><p>Scheduled for 14 Aug</p></div><div class="summary-block"><h4>Bone Density</h4><p>Normal</p></div>`,
+        reports: `<div class="summary-block"><h4>Diagnosis</h4><p>Osteoarthritis</p></div><div class="summary-block"><h4>Prescription</h4><p>Painkillers, physiotherapy</p></div>`
+      },
+      psychiatry: {
+        name: "Dr. Nadia Shah",
+        specialty: "Psychiatrist",
+        image: "images/Dr. Nadia Shah.jpg",
+        appointments: `<div class="summary-block"><h4>Maryam</h4><p>Anxiety, insomnia</p></div><div class="summary-block"><h4>Ali Hassan</h4><p>Depression, mood swings</p></div>`,
+        tests: `<div class="summary-block"><h4>Psych Eval</h4><p>Completed</p></div><div class="summary-block"><h4>Sleep Study</h4><p>Scheduled for 20 Aug</p></div>`,
+        reports: `<div class="summary-block"><h4>Diagnosis</h4><p>Generalized Anxiety Disorder</p></div><div class="summary-block"><h4>Prescription</h4><p>SSRIs, counseling</p></div>`
+      },
+      ent: {
+        name: "Dr. Bilal Qureshi",
+        specialty: "ENT Specialist",
+        image: "images/Dr. Bilal Qureshi.jpg",
+        appointments: `<div class="summary-block"><h4>Ahmed Raza</h4><p>Ear pain, hearing loss</p></div><div class="summary-block"><h4>Samina</h4><p>Sore throat, nasal congestion</p></div>`,
+        tests: `<div class="summary-block"><h4>Hearing Test</h4><p>Scheduled for 16 Aug</p></div><div class="summary-block"><h4>Throat Swab</h4><p>Completed</p></div>`,
+        reports: `<div class="summary-block"><h4>Diagnosis</h4><p>Otitis Media</p></div><div class="summary-block"><h4>Prescription</h4><p>Antibiotics, ear drops</p></div>`
+      },
+      ophthalmology: {
+        name: "Dr. Hina Malik",
+        specialty: "Eye Specialist",
+        image: "images/Dr. Hina Malik.jpg",
+        appointments: `<div class="summary-block"><h4>Saad</h4><p>Blurred vision, headache</p></div><div class="summary-block"><h4>Uzair</h4><p>Eye redness, itching</p></div>`,
+        tests: `<div class="summary-block"><h4>Eye Exam</h4><p>Completed</p></div><div class="summary-block"><h4>Vision Test</h4><p>6/9</p></div>`,
+        reports: `<div class="summary-block"><h4>Diagnosis</h4><p>Myopia</p></div><div class="summary-block"><h4>Prescription</h4><p>Glasses, eye drops</p></div>`
+      },
+      gastro: {
+        name: "Dr. Usman Farooq",
+        specialty: "Gastroenterologist",
+        image: "images/Dr. Usman Farooq.jpg",
+        appointments: `<div class="summary-block"><h4>Rabia</h4><p>Abdominal pain, nausea</p></div><div class="summary-block"><h4>Imran</h4><p>Indigestion, bloating</p></div>`,
+        tests: `<div class="summary-block"><h4>Endoscopy</h4><p>Scheduled for 17 Aug</p></div><div class="summary-block"><h4>Liver Function</h4><p>Normal</p></div>`,
+        reports: `<div class="summary-block"><h4>Diagnosis</h4><p>Gastritis</p></div><div class="summary-block"><h4>Prescription</h4><p>Antacids, dietary advice</p></div>`
+      },
+      pulmonology: {
+        name: "Dr. Farah Javed",
+        specialty: "Pulmonologist",
+        image: "images/Dr. Farah Javed.jpg",
+        appointments: `<div class="summary-block"><h4>Bilal</h4><p>Shortness of breath, cough</p></div><div class="summary-block"><h4>Shazia</h4><p>Chronic cough, wheezing</p></div>`,
+        tests: `<div class="summary-block"><h4>Spirometry</h4><p>Completed</p></div><div class="summary-block"><h4>Chest X-Ray</h4><p>Scheduled for 19 Aug</p></div>`,
+        reports: `<div class="summary-block"><h4>Diagnosis</h4><p>Asthma</p></div><div class="summary-block"><h4>Prescription</h4><p>Inhaler, allergy meds</p></div>`
+      }
+    };
+
+    let currentDoctor = 'cardiology';
+    let currentTab = 'appointments';
+
+    function loadDoctor(specialty) {
+      currentDoctor = specialty;
+      const doc = data[specialty];
+      if (!doc) return;
+
+      // Update doctor profile
+      document.getElementById('doctorImage').src = doc.image;
+      document.getElementById('doctorName').textContent = doc.name;
+      document.getElementById('doctorSpecialty').textContent = doc.specialty;
+      document.getElementById('doctorProfile').style.display = 'block';
+      updateContent();
+    }
+
+    function showSection(tabId) {
+      currentTab = tabId;
+      document.querySelectorAll('.content-section').forEach(section => {
+        section.classList.remove('active');
+      });
+      document.getElementById(tabId).classList.add('active');
+      updateContent();
+    }
+
+    function updateContent() {
+      const doctorData = data[currentDoctor];
+      if (!doctorData) return;
+
+      document.getElementById('appointments').innerHTML = doctorData.appointments || '';
+      document.getElementById('tests').innerHTML = doctorData.tests || '';
+      document.getElementById('reports').innerHTML = doctorData.reports || '';
+    }
+
+    // --- Beautiful PDF Export ---
+    document.getElementById('download-pdf-btn').addEventListener('click', () => {
+      const doc = data[currentDoctor];
+      const pdfContent = `
+        <div style="font-family:Segoe UI,sans-serif;max-width:700px;margin:auto;padding:30px;background:#f8fafc;border-radius:16px;box-shadow:0 0 16px #d0d7e1;">
+          <div style="display:flex;align-items:center;gap:20px;">
+            <img src="${doc.image}" style="width:90px;height:90px;border-radius:50%;border:4px solid #3498db;">
+            <div>
+              <h2 style="margin:0 0 5px 0;color:#2c3e50;">${doc.name}</h2>
+              <p style="margin:0;color:#3498db;font-weight:bold;">${doc.specialty}</p>
+            </div>
+          </div>
+          <hr style="margin:24px 0 18px 0;border:0;border-top:2px solid #e1e7ef;">
+          <div>
+            <h3 style="color:#2980b9;margin-bottom:10px;">Appointments</h3>
+            ${doc.appointments}
+          </div>
+          <div>
+            <h3 style="color:#2980b9;margin:22px 0 10px 0;">Tests</h3>
+            ${doc.tests}
+          </div>
+          <div>
+            <h3 style="color:#2980b9;margin:22px 0 10px 0;">Reports</h3>
+            ${doc.reports}
+          </div>
+          <div style="margin-top:30px;font-size:13px;color:#888;text-align:right;">
+            <span>Generated by MediConnect Dashboard</span>
+          </div>
+        </div>
+      `;
+
+      // Temporary container for PDF
+      let tempDiv = document.createElement('div');
+      tempDiv.innerHTML = pdfContent;
+      document.body.appendChild(tempDiv);
+
+      const opt = {
+        margin: 0,
+        filename: `${doc.name.replace(/\s/g, '_')}_Profile.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'pt', format: 'a4', orientation: 'portrait' }
+      };
+      html2pdf().set(opt).from(tempDiv).save().then(() => {
+        document.body.removeChild(tempDiv);
+      });
+    });
+
+    // Initial load
+    loadDoctor(currentDoctor);
+  </script>
+
+</body>
+</html>

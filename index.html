@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>MediConnect | Home</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(to right, #e3f2fd, #fce4ec);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      text-align: center;
+    }
+
+    .logo img {
+      width: 140px;
+      height: auto;
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      color: #00695c;
+      margin-bottom: 10px;
+    }
+
+    p {
+      font-size: 1.2rem;
+      color: #555;
+      margin-bottom: 30px;
+    }
+
+    .btn {
+      padding: 12px 24px;
+      font-size: 1rem;
+      background-color: #00695c;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .btn:hover {
+      background-color: #004d40;
+    }
+
+    .language-selector {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+    }
+
+    .footer {
+      margin-top: 60px;
+      font-size: 0.9rem;
+      color: #aaa;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ✅ Language Selector -->
+  <div class="language-selector">
+    <select id="lang-select"></select>
+  </div>
+
+  <!-- ✅ Logo -->
+  <div class="logo">
+    <img src="assets/logo.png" alt="MediConnect Logo" />
+  </div>
+
+  <!-- ✅ Translatable Text -->
+  <h1 data-key="heading">Welcome to MediConnect</h1>
+  <p data-key="paragraph">Your health, your choice. Find the right specialist now.</p>
+
+  <!-- ✅ Get Started Button -->
+  <button id="getStarted" class="btn" data-key="getStarted">Get Started</button>
+
+  <!-- ✅ Footer -->
+  <div class="footer">© 2025 MediConnect. All rights reserved.</div>
+
+  <!-- ✅ Inline Script -->
+  <script>
+    const translations = {
+      en: {
+        heading: "Welcome to MediConnect",
+        paragraph: "Your health, your choice. Find the right specialist now.",
+        getStarted: "Get Started"
+      },
+      ur: {
+        heading: "میڈی کنیکٹ میں خوش آمدید",
+        paragraph: "آپ کی صحت، آپ کا انتخاب۔ صحیح ماہر تلاش کریں۔",
+        getStarted: "شروع کریں"
+      },
+      hi: {
+        heading: "मेडिकनेक्ट में आपका स्वागत है",
+        paragraph: "आपका स्वास्थ्य, आपकी पसंद। सही विशेषज्ञ खोजें।",
+        getStarted: "शुरू करें"
+      },
+      fr: {
+        heading: "Bienvenue sur MediConnect",
+        paragraph: "Votre santé, votre choix. Trouvez le bon spécialiste maintenant.",
+        getStarted: "Commencer"
+      },
+      ar: {
+        heading: "مرحبًا بك في MediConnect",
+        paragraph: "صحتك، اختيارك. ابحث عن الأخصائي المناسب الآن.",
+        getStarted: "ابدأ"
+      }
+    };
+
+    const LANG_STORAGE_KEY = 'selectedLang';
+    const DEFAULT_LANG = 'en';
+    let currentLang = localStorage.getItem(LANG_STORAGE_KEY) || DEFAULT_LANG;
+
+    const rtlLangs = ['ur', 'ar'];
+
+    function applyTranslations() {
+      document.querySelectorAll('[data-key]').forEach((el) => {
+        const key = el.getAttribute('data-key');
+        const translatedText = translations[currentLang]?.[key];
+        if (translatedText) el.innerText = translatedText;
+      });
+
+      document.documentElement.dir = rtlLangs.includes(currentLang) ? 'rtl' : 'ltr';
+    }
+
+    function populateDropdown() {
+      const dropdown = document.getElementById('lang-select');
+      const languageNames = {
+        en: "English",
+        ur: "اردو",
+        hi: "हिन्दी",
+        fr: "Français",
+        ar: "العربية"
+      };
+
+      Object.keys(translations).forEach((lang) => {
+        const option = document.createElement('option');
+        option.value = lang;
+        option.textContent = languageNames[lang] || lang;
+        dropdown.appendChild(option);
+      });
+
+      dropdown.value = currentLang;
+
+      dropdown.addEventListener('change', (e) => {
+        currentLang = e.target.value;
+        localStorage.setItem(LANG_STORAGE_KEY, currentLang);
+        applyTranslations();
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      populateDropdown();
+      applyTranslations();
+
+      document.getElementById("getStarted").addEventListener("click", () => {
+        window.location.href = "signup.html";
+      });
+    });
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Patient Dashboard | MediConnect</title>
+  <link rel="stylesheet" href="../css/dashboard.css" />
+</head>
+<body>
+
+  <header>
+    <h2 style="color:#007bff;">MediConnect</h2>
+    <div>
+      <button id="logout-btn" data-key="logout">Logout</button>
+      <select id="lang-select">
+        <option value="en">English</option>
+        <option value="ur">اردو</option>
+      </select>
+    </div>
+  </header>
+
+  <nav class="nav-tabs">
+    <button class="active" data-key="my_doctors">My Doctors</button>
+    <button data-key="prescriptions">Prescriptions</button>
+    <button data-key="history">History</button>
+  </nav>
+
+  <section class="dashboard-section fade-in">
+    <div class="card">
+      <h3 data-key="doctor_list">Doctor List</h3>
+      <p>2 active | 1 pending</p>
+    </div>
+    <div class="card">
+      <h3 data-key="prescription_summary">Prescription Summary</h3>
+      <p>5 total | 2 new</p>
+    </div>
+    <div class="card">
+      <h3 data-key="visit_history">Visit History</h3>
+      <p>Last visit: 3 days ago</p>
+    </div>
+  </section>
+
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"></script>
+  <script src="../js/firebase-init.js"></script>
+
+  <script>
+    const translations = {
+      en: {
+        logout: "Logout",
+        my_doctors: "My Doctors",
+        prescriptions: "Prescriptions",
+        history: "History",
+        doctor_list: "Doctor List",
+        prescription_summary: "Prescription Summary",
+        visit_history: "Visit History"
+      },
+      ur: {
+        logout: "لاگ آؤٹ",
+        my_doctors: "میرے ڈاکٹرز",
+        prescriptions: "نسخے",
+        history: "تاریخ",
+        doctor_list: "ڈاکٹرز کی فہرست",
+        prescription_summary: "نسخوں کا خلاصہ",
+        visit_history: "ملاقات کی تاریخ"
+      }
+    };
+
+    document.getElementById("lang-select").addEventListener("change", e => {
+      const lang = e.target.value;
+      document.querySelectorAll("[data-key]").forEach(el => {
+        el.textContent = translations[lang][el.dataset.key];
+      });
+    });
+
+    firebase.auth().onAuthStateChanged(user => {
+      if (!user) window.location.href = "../login.html";
+    });
+
+    document.getElementById("logout-btn").addEventListener("click", () => {
+      firebase.auth().signOut().then(() => window.location.href = "../login.html");
+    });
+  </script>
+  <script src="assets/js/buttons.js" defer></script>
+
+</body>
+</html>
+

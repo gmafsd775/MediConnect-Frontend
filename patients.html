@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Patient Dashboard</title>
+  <link rel="stylesheet" href="css/patient.css" />
+</head>
+<body>
+  <h1>Choose a Specialist</h1>
+  <div id="doctorGrid">Loading doctors...</div>
+  <div id="appointments"></div>
+
+  <script type="module">
+    import { auth } from './js/firebase.js';
+    import {
+      onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+    import {
+      getFirestore,
+      collection,
+      getDocs,
+      query,
+      where
+    } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+
+    const db = getFirestore();
+
+    function loadDoctors() {
+      const grid = document.getElementById("doctorGrid");
+      grid.innerHTML = "";
+
+      getDocs(collection(db, "doctors"))
+        .then((snapshot) => {
+          snapshot.forEach((doc) => {
+            const data = doc.data();
+            const card = document.createElement("div");
+            card.className = "doctor-card";
+            card.textContent = `${data.name} (${data.specialty})`;
+            card.addEventListener("click", () => loadAppointments(data.name));
+            grid.appendChild(card);
+          });
+        });
+    }
+
+    async function loadAppointments(doctorName) {
+      const container = document.getElementById("appointments");
+      container.innerHTML = `<h3>Appointments for ${doctorName}</h3>`;
+
+      const q = query(collection(db, "appointments"), where("doctorName", "==", doctorName));
+      const snapshot = await getDocs(q);
+
+      if (snapshot.empty) {
+        container.innerHTML += "<p>No appointments found.</p>";
+        return;
+      }
+
+      snapshot.forEach((doc) => {
+        const data = doc.data();
+        const div = document.createElement("div");
+        div.className = "appointment-card";
+        div.textContent = `${data.date} — ${data.patientName}`;
+        container.appendChild(div);
+      });
+    }
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        loadDoctors();
+      } else {
+        window.location.href = "login.html";
+      }
+    });
+  </script>
+</body>
+</html>
