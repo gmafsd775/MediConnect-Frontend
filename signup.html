@@ -7,16 +7,37 @@
   <link rel="stylesheet" href="css/login.css" />
 </head>
 <body>
+
+  <script>
+    // ✅ Ensure no old login state is carried over
+    localStorage.removeItem('doctorLoggedIn');
+    localStorage.removeItem('patientLoggedIn');
+    sessionStorage.removeItem('doctorLoggedIn');
+    sessionStorage.removeItem('patientLoggedIn');
+  </script>
+
   <div class="auth-container">
     <img src="assets/logo.png" alt="MediConnect Logo" class="logo" />
     <h2>Create Account</h2>
+
     <form id="signupForm">
       <input type="email" id="email" placeholder="Email" required />
       <input type="password" id="password" placeholder="Password" required />
+      <!-- If you want role selection at signup -->
+      <!--
+      <select id="role" required>
+        <option value="">Select Role</option>
+        <option value="doctor">Doctor</option>
+        <option value="patient">Patient</option>
+      </select>
+      -->
       <button type="submit">Sign Up</button>
     </form>
+
     <p>Already registered? <a href="login.html">Login here</a></p>
   </div>
+
   <script src="js/signup.js"></script>
+
 </body>
 </html>
