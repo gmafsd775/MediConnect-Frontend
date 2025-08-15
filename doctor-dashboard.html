@@ -193,8 +193,17 @@
 </head>
 <body>
 
+  <!-- Access guard: add this right after <body> -->
+  <script>
+    if (!localStorage.getItem('loggedInUser')) {
+      window.location.href = 'login.html';
+    }
+  </script>
+
   <div class="top-bar">
     <img class="logo" src="assets/logo.png" alt="MediConnect logo">
+    <!-- Optional: show logged-in email -->
+    <span id="welcomeUser" class="welcome"></span>
     <button class="logout-btn" id="logoutBtn">Logout</button>
   </div>
 
@@ -222,12 +231,23 @@
     </main>
   </div>
 
+  <!-- If not already included elsewhere, add html2pdf bundle -->
+  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js" defer></script> -->
+
   <script>
-    // Logout
+    // Logout (replace 'auth' with 'loggedInUser')
     document.getElementById('logoutBtn').addEventListener('click', () => {
-      localStorage.removeItem('auth');
+      localStorage.removeItem('loggedInUser');
       window.location.replace('login.html');
     });
+
+    // Optional: show logged-in email/name in the top bar
+    const welcomeEl = document.getElementById('welcomeUser');
+    const loggedInUser = localStorage.getItem('loggedInUser');
+    if (welcomeEl && loggedInUser) {
+      welcomeEl.textContent = `Welcome, ${loggedInUser}`;
+      welcomeEl.setAttribute('aria-label', `Logged in as ${loggedInUser}`);
+    }
 
     // Data
     const doctors = [
@@ -298,50 +318,52 @@
     // Bottom quick buttons
     btnAppointments.addEventListener('click', () => {
       currentTab = 'appointments';
-      tabs.forEach(t => t.setAttribute('aria-selected', t.dataset.tab === 'appointments'));
+      tabs.forEach(t => t.setAttribute('aria-selected', t.dataset.tab === 'appointments' ? 'true' : 'false'));
       renderContent();
     });
     btnTests.addEventListener('click', () => {
       currentTab = 'tests';
-      tabs.forEach(t => t.setAttribute('aria-selected', t.dataset.tab === 'tests'));
+      tabs.forEach(t => t.setAttribute('aria-selected', t.dataset.tab === 'tests' ? 'true' : 'false'));
       renderContent();
     });
     btnReports.addEventListener('click', () => {
       currentTab = 'reports';
-      tabs.forEach(t => t.setAttribute('aria-selected', t.dataset.tab === 'reports'));
+      tabs.forEach(t => t.setAttribute('aria-selected', t.dataset.tab === 'reports' ? 'true' : 'false'));
       renderContent();
     });
 
     // PDF Download
-   btnDownload.addEventListener('click', () => {
-  const doctor = doctors[currentDoctorIndex];
-  
-  // Apply colorful PDF theme
-  contentSectionEl.classList.add('pdf-theme');
-  
-  // Optional: dynamic badge
-  const badge = document.createElement('div');
-  badge.className = 'pdf-badge';
-  badge.textContent = `Section: ${currentTab.toUpperCase()}`;
-  contentSectionEl.prepend(badge);
-  
-  const opt = {
-    margin: 0.5,
-    filename: `${doctor.name.replace(/\s+/g,'_')}_${currentTab}.pdf`,
-    image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { scale: 2 },
-    jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
-  };
-  
-  html2pdf().from(contentSectionEl).set(opt).save().then(() => {
-    // Clean up theme after PDF
-    contentSectionEl.classList.remove('pdf-theme');
-    badge.remove();
-  });
-});
+    btnDownload.addEventListener('click', () => {
+      const doctor = doctors[currentDoctorIndex];
+
+      // Apply colorful PDF theme
+      contentSectionEl.classList.add('pdf-theme');
+
+      // Optional: dynamic badge
+      const badge = document.createElement('div');
+      badge.className = 'pdf-badge';
+      badge.textContent = `Section: ${currentTab.toUpperCase()}`;
+      contentSectionEl.prepend(badge);
+
+      const opt = {
+        margin: 0.5,
+        filename: `${doctor.name.replace(/\s+/g,'_')}_${currentTab}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+      };
+
+      html2pdf().from(contentSectionEl).set(opt).save().then(() => {
+        // Clean up theme after PDF
+        contentSectionEl.classList.remove('pdf-theme');
+        badge.remove();
+      });
+    });
+
     // Init
     renderDoctorGrid();
     renderContent();
   </script>
+
 </body>
 </html>
