@@ -192,20 +192,18 @@
   </style>
 </head>
 <body>
-
-  document.addEventListener('DOMContentLoaded', () => {
+<script>
+document.addEventListener('DOMContentLoaded', () => {
   if (!localStorage.getItem('loggedInUser')) {
-    window.location.href = 'login.html';
+    window.location.replace('login.html');
   }
 });
 
 document.getElementById('logoutBtn').addEventListener('click', () => {
   localStorage.removeItem('loggedInUser');
-  window.location.href = 'login.html';
+  window.location.replace('login.html');
 });
-
-  </script>
-
+</script>
   <div class="top-bar">
     <img class="logo" src="assets/logo.png" alt="MediConnect logo">
     <!-- Optional: show logged-in email -->
