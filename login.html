@@ -17,10 +17,44 @@
     </form>
     <p>New user? <a href="signup.html">Create account</a></p>
   </div>
-  <script src="js/login.js"></script>
-  <div id="toast" class="toast hidden">
-  <p>✅ Login successful! Redirecting to doctors list...</p>
-</div>
 
+  <!-- Toast -->
+  <div id="toast" class="toast hidden">
+    <p>✅ Login successful! Redirecting to your dashboard...</p>
+  </div>
+
+  <script>
+    // 🔹 Guard: If already logged in, skip this page
+    if (localStorage.getItem('loggedInUser')) {
+      window.location.href = 'doctor-dashboard.html';
+    }
+
+    const form = document.getElementById('loginForm');
+    const toast = document.getElementById('toast');
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value.trim();
+
+      // TODO: Yahan real authentication ayegi
+      if (email && password) {
+        // 🔹 Save email in LocalStorage for dashboard greeting
+        localStorage.setItem('loggedInUser', email);
+
+        // Show toast
+        toast.classList.remove('hidden');
+
+        // Redirect after short delay so toast is visible
+        setTimeout(() => {
+          window.location.href = 'doctor-dashboard.html';
+        }, 1000);
+      } else {
+        alert('Invalid email or password');
+      }
+    });
+  </script>
 </body>
 </html>
+
