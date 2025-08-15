@@ -193,11 +193,17 @@
 </head>
 <body>
 
-  <!-- Access guard: add this right after <body> -->
-  <script>
-    if (!localStorage.getItem('loggedInUser')) {
-      window.location.href = 'login.html';
-    }
+  document.addEventListener('DOMContentLoaded', () => {
+  if (!localStorage.getItem('loggedInUser')) {
+    window.location.href = 'login.html';
+  }
+});
+
+document.getElementById('logoutBtn').addEventListener('click', () => {
+  localStorage.removeItem('loggedInUser');
+  window.location.href = 'login.html';
+});
+
   </script>
 
   <div class="top-bar">
