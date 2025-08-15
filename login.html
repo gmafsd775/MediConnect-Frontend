@@ -1,47 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Login - MediConnect</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <h1>Login</h1>
   
   <form id="loginForm">
-    <input type="email" id="email" placeholder="Email" required>
-    <input type="password" id="password" placeholder="Password" required>
+    <input type="email" id="email" placeholder="Email" required />
+    <input type="password" id="password" placeholder="Password" required />
     <button type="submit">Login</button>
   </form>
 
   <p>Don’t have an account? <a href="signup.html">Sign up</a></p>
 
   <script>
-document.addEventListener('DOMContentLoaded', () => {
-  // Agar already logged in hai to dashboard bhejo
-  if (localStorage.getItem('loggedInUser')) {
-    window.location.replace('doctor-dashboard.html');
-  }
-});
+    // If already logged in, go directly to dashboard
+    document.addEventListener('DOMContentLoaded', () => {
+      if (localStorage.getItem('loggedInUser')) {
+        window.location.replace('doctor-dashboard.html');
+      }
+    });
 
-document.getElementById('loginForm').addEventListener('submit', (e) => {
-  e.preventDefault();
+    // Handle login form submit
+    document.getElementById('loginForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value.trim();
 
-  const email = document.getElementById('email').value.trim();
-  const password = document.getElementById('password').value.trim();
-
-  // Dummy auth — backend se connect karne ke baad yahan validation hoga
-  if (email && password) {
-    localStorage.setItem('loggedInUser', email);
-    window.location.replace('doctor-dashboard.html'); // replace → loop break
-  } else {
-    alert('Invalid credentials');
-  }
-});
-</script>
-
+      // Dummy validation — replace with backend logic later
+      if (email && password) {
+        localStorage.setItem('loggedInUser', email);
+        window.location.replace('doctor-dashboard.html');
+      } else {
+        alert('Invalid credentials');
+      }
+    });
+  </script>
 </body>
 </html>
-
-
