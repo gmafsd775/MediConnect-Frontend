@@ -18,26 +18,29 @@
   <p>Don’t have an account? <a href="signup.html">Sign up</a></p>
 
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      if (localStorage.getItem('loggedInUser')) {
-        window.location.href = 'doctor-dashboard.html';
-      }
-    });
+document.addEventListener('DOMContentLoaded', () => {
+  // Agar already logged in hai to dashboard bhejo
+  if (localStorage.getItem('loggedInUser')) {
+    window.location.replace('doctor-dashboard.html');
+  }
+});
 
-    document.getElementById('loginForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      const email = document.getElementById('email').value;
-      const password = document.getElementById('password').value;
+document.getElementById('loginForm').addEventListener('submit', (e) => {
+  e.preventDefault();
 
-      // Dummy auth: Replace with real backend validation
-      if (email && password) {
-        localStorage.setItem('loggedInUser', email);
-        window.location.href = 'doctor-dashboard.html';
-      } else {
-        alert('Invalid credentials');
-      }
-    });
-  </script>
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value.trim();
+
+  // Dummy auth — backend se connect karne ke baad yahan validation hoga
+  if (email && password) {
+    localStorage.setItem('loggedInUser', email);
+    window.location.replace('doctor-dashboard.html'); // replace → loop break
+  } else {
+    alert('Invalid credentials');
+  }
+});
+</script>
+
 </body>
 </html>
 
