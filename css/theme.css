@@ -1,1 +1,161 @@
+/* ========== MediConnect theme (lightweight, fast) ========== */
+
+/* Variables */
+:root{
+  --brand-primary:#1f78c1;
+  --brand-accent:#2ecc71;
+  --bg:#f7fbff;
+  --text:#243447;
+  --muted:#6b7280;
+  --card:#ffffff;
+  --border:#e6eef7;
+  --radius:12px;
+  --shadow:0 8px 24px rgba(31,120,193,0.08);
+  --font: ui-sans-serif, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Noto Sans";
+}
+
+/* Base */
+html,body{height:100%}
+body{
+  background: linear-gradient(180deg, #f2f8ff, #ffffff);
+  color: var(--text);
+  font-family: var(--font);
+  margin:0;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+
+/* Links */
+a{color:var(--brand-primary); text-underline-offset:2px}
+a:hover{opacity:.9}
+
+/* Buttons */
+.btn{
+  border:none; padding:10px 14px; border-radius:10px; cursor:pointer; font-weight:600;
+  background:#eef6ff; color:var(--brand-primary); border:1px solid #e1efff;
+  transition: all .2s ease;
+}
+.btn:hover{transform: translateY(-1px); box-shadow: var(--shadow)}
+.btn-primary{background:var(--brand-primary); color:#fff; border-color:#18619b}
+.btn-danger{background:#ffeded; color:#c0392b; border:1px solid #ffd1d1}
+
+/* Inputs (also styles login/signup forms nicely) */
+input, select, textarea{
+  width:100%; padding:12px 14px; border:1px solid var(--border); border-radius:10px;
+  outline:none; background:#fff; color:var(--text);
+}
+input:focus, select:focus, textarea:focus{border-color:#cfe5ff; box-shadow:0 0 0 3px #e9f3ff}
+
+/* Auth container polish (login/signup) */
+.auth-container{
+  max-width:380px; margin:10vh auto; background:var(--card); border:1px solid var(--border);
+  border-radius:var(--radius); padding:24px; box-shadow: var(--shadow); text-align:center;
+}
+.auth-container .logo{height:52px; width:auto; margin-bottom:10px}
+.auth-container h2{margin:6px 0 16px; color:var(--brand-primary)}
+.auth-container form{display:flex; flex-direction:column; gap:12px}
+.auth-container button{margin-top:6px}
+
+/* Toast */
+.toast{position:fixed; left:50%; top:20px; transform:translateX(-50%);
+  background:#0ea5e9; color:#fff; padding:10px 14px; border-radius:999px; box-shadow: var(--shadow); z-index:60}
+.hidden{display:none}
+
+/* Top bar (dashboard) */
+.top-bar{
+  position:sticky; top:0; z-index:50;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:12px 16px; background:linear-gradient(90deg, #e9f4ff, #f7fbff);
+  border-bottom:1px solid var(--border); backdrop-filter: blur(6px);
+}
+.brand{display:flex; align-items:center; gap:10px}
+.brand .logo{height:36px}
+.title{font-weight:700; letter-spacing:0.2px; color:var(--brand-primary)}
+.top-actions{display:flex; align-items:center; gap:12px}
+.welcome{font-size:14px; color:#4b5563; padding:6px 10px; background:#fff; border:1px solid var(--border); border-radius:999px}
+
+/* Dashboard layout */
+.dashboard{
+  max-width:1200px; margin:20px auto; padding:0 16px;
+  display:grid; grid-template-columns:270px 1fr; gap:16px;
+}
+.panel{background:var(--card); border:1px solid var(--border); border-radius:var(--radius); box-shadow: var(--shadow)}
+.sidebar{padding:14px}
+.sidebar h3{margin:0 0 10px; font-size:18px; color:var(--brand-primary)}
+
+/* Doctors list */
+.doctor-grid{display:flex; flex-direction:column; gap:10px; max-height: calc(100vh - 160px); overflow:auto; padding-right:4px}
+.doctor-card{
+  background:#ffffff; border:1px solid var(--border); border-radius:12px; padding:10px 12px; cursor:pointer;
+  display:flex; flex-direction:column; gap:4px; transition: all .15s ease;
+}
+.doctor-card:hover{transform: translateY(-1px); box-shadow: var(--shadow)}
+.doctor-card.active{outline:2px solid var(--brand-primary); background:#f2f9ff}
+.doc-name{font-weight:700; font-size:14px}
+.doc-spec{font-size:12px; color:var(--muted)}
+
+/* Main */
+.main{display:flex; flex-direction:column; gap:14px}
+.toolbar{
+  display:flex; flex-wrap:wrap; align-items:center; gap:10px; padding:12px; border-bottom:1px solid var(--border);
+}
+.search{flex:1; display:flex; gap:8px; background:#fafcff; border:1px solid var(--border); padding:8px 10px; border-radius:10px}
+.search input{border:none; outline:none; flex:1; background:transparent}
+.tabs{display:flex; gap:8px; flex-wrap:wrap}
+.tab{padding:8px 12px; border-radius:999px; border:1px solid var(--border); background:#fff; cursor:pointer; font-weight:600; color:#355}
+.tab[aria-selected="true"]{background: var(--brand-primary); color:#fff; border-color:#18619b}
+
+/* Content cards */
+.content{padding:14px}
+.cards{display:grid; gap:12px; grid-template-columns: repeat(2, minmax(0,1fr))}
+.card{background:#fff; border:1px solid var(--border); border-radius:12px; padding:12px; box-shadow: var(--shadow)}
+.card h4{margin:0 0 8px; font-size:16px; color:#1f2937}
+.meta{font-size:12px; color:var(--muted)}
+
+/* Tables */
+.table{width:100%; border-collapse:separate; border-spacing:0; font-size:14px; overflow:hidden; border-radius:12px; border:1px solid var(--border)}
+.table thead th{background:#f6faff; text-align:left; padding:10px; border-bottom:1px solid var(--border); font-weight:700}
+.table tbody td{padding:10px; border-bottom:1px solid #f2f5f9}
+.badge{display:inline-block; padding:4px 8px; border-radius:999px; font-size:12px}
+.badge.green{background:#eaf9f1; color:#1e824c; border:1px solid #c9f0dc}
+.badge.orange{background:#fff6e9; color:#d98324; border:1px solid #ffe1b6}
+.badge.blue{background:#eaf4ff; color:#1f78c1; border:1px solid #cfe5ff}
+
+/* Actions bar */
+.actions-bar{
+  display:flex; gap:10px; padding:12px; border-top:1px solid var(--border); background:#fcfeff; border-radius:0 0 var(--radius) var(--radius);
+  position:sticky; bottom:0;
+}
+
+/* PDF theme */
+.pdf-theme{background: linear-gradient(135deg, #f0f8ff, #e6f2ff); padding:18px; border-radius:12px; color:#2c3e50}
+.pdf-theme h3, .pdf-theme h4{color:#1f78c1}
+.pdf-badge{display:inline-block; padding:4px 10px; border-radius:999px; background:#2ecc71; color:#fff; font-size:12px; margin-bottom:8px}
+
+/* Chatbot */
+.chat-fab{
+  position:fixed; right:20px; bottom:20px; z-index:60;
+  height:56px; width:56px; border-radius:50%; border:none; background: var(--brand-primary); color:#fff; cursor:pointer; box-shadow: var(--shadow);
+  display:flex; align-items:center; justify-content:center; font-weight:700;
+}
+.chat-panel{
+  position:fixed; right:20px; bottom:84px; width:360px; max-height:60vh; display:none; flex-direction:column; background:#fff; border:1px solid var(--border);
+  border-radius:16px; box-shadow: var(--shadow); overflow:hidden; z-index:60;
+}
+.chat-header{display:flex; align-items:center; justify-content:space-between; padding:10px 12px; background:#f6faff; border-bottom:1px solid var(--border)}
+.chat-header h4{margin:0; font-size:14px; color:#244}
+.chat-body{padding:10px; display:flex; flex-direction:column; gap:8px; overflow:auto}
+.msg{max-width:80%; padding:8px 10px; border-radius:12px; border:1px solid var(--border); font-size:14px; line-height:1.35}
+.msg.user{align-self:flex-end; background:#eaf4ff}
+.msg.bot{align-self:flex-start; background:#f9fafc}
+.chat-input{display:flex; gap:8px; padding:10px; border-top:1px solid var(--border); background:#fff}
+.chat-input input{flex:1}
+
+/* Responsive */
+@media (max-width: 980px){
+  .dashboard{grid-template-columns:1fr}
+  .doctor-grid{max-height:unset}
+  .cards{grid-template-columns:1fr}
+  .chat-panel{right:12px; width:92vw}
+}
 
