@@ -1,32 +1,511 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Doctor Dashboard - MediConnect</title>
-  <link rel="stylesheet" href="style.css" />
+  <title>MediConnect | Doctor Dashboard</title>
+
+  <!-- Brand-ready, responsive styles (extract to css/doctor-dashboard.css later if you want) -->
+  <style>
+    :root{
+      --brand-primary:#1f78c1;      /* Brand Blue */
+      --brand-accent:#2ecc71;       /* Accent Green */
+      --brand-bg:#f7fbff;           /* Light BG */
+      --text:#2c3e50;
+      --muted:#708090;
+      --card:#ffffff;
+      --border:#e8eef5;
+      --shadow: 0 8px 24px rgba(31, 120, 193, 0.08);
+      --radius:14px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; font-family: ui-sans-serif, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji";
+      color:var(--text); background:linear-gradient(180deg, #f2f8ff, #ffffff);
+    }
+    /* Top bar */
+    .top-bar{
+      position:sticky; top:0; z-index:50;
+      display:flex; align-items:center; justify-content:space-between;
+      padding:12px 16px; background:linear-gradient(90deg, #e9f4ff, #f7fbff);
+      border-bottom:1px solid var(--border);
+      backdrop-filter: blur(6px);
+    }
+    .brand{
+      display:flex; align-items:center; gap:10px;
+    }
+    .brand .logo{height:36px; width:auto}
+    .brand .title{font-weight:700; letter-spacing:0.2px; color:var(--brand-primary)}
+    .top-actions{
+      display:flex; align-items:center; gap:12px;
+    }
+    .welcome{
+      font-size:14px; color:var(--muted); padding:6px 10px; background:#fff; border:1px solid var(--border);
+      border-radius:999px;
+    }
+    .btn{
+      border:none; padding:10px 14px; border-radius:10px; cursor:pointer; font-weight:600;
+      background:#eef6ff; color:var(--brand-primary);
+      transition: all .2s ease; border:1px solid #e1efff;
+    }
+    .btn:hover{transform: translateY(-1px); box-shadow: var(--shadow)}
+    .btn-primary{
+      background: var(--brand-primary); color:#fff; border:1px solid #18619b;
+    }
+    .btn-danger{
+      background:#ffeded; color:#c0392b; border:1px solid #ffd1d1;
+    }
+
+    /* Layout */
+    .dashboard{
+      max-width:1200px; margin:20px auto; padding:0 16px;
+      display:grid; grid-template-columns: 270px 1fr; gap:16px;
+    }
+    .panel{
+      background:var(--card); border:1px solid var(--border); border-radius:var(--radius); box-shadow: var(--shadow);
+    }
+
+    /* Sidebar */
+    .sidebar{padding:14px}
+    .sidebar h3{
+      margin:0 0 10px; font-size:18px; color:var(--brand-primary);
+      display:flex; align-items:center; gap:8px;
+    }
+    .doctor-grid{display:flex; flex-direction:column; gap:10px; max-height: calc(100vh - 160px); overflow:auto; padding-right:4px}
+    .doctor-card{
+      background:#ffffff; border:1px solid var(--border); border-radius:12px; padding:10px 12px; cursor:pointer;
+      display:flex; flex-direction:column; gap:4px; transition: all .15s ease;
+    }
+    .doctor-card:hover{transform: translateY(-1px); box-shadow: var(--shadow)}
+    .doctor-card.active{outline:2px solid var(--brand-primary); background:#f2f9ff}
+    .doc-name{font-weight:700; font-size:14px}
+    .doc-spec{font-size:12px; color:var(--muted)}
+
+    /* Main */
+    .main{display:flex; flex-direction:column; gap:14px}
+    .toolbar{
+      display:flex; flex-wrap:wrap; align-items:center; gap:10px; padding:12px; border-bottom:1px solid var(--border);
+    }
+    .search{
+      flex:1; display:flex; gap:8px; background:#fafcff; border:1px solid var(--border); padding:8px 10px; border-radius:10px;
+    }
+    .search input{border:none; outline:none; flex:1; background:transparent}
+    .tabs{display:flex; gap:8px; flex-wrap:wrap}
+    .tab{
+      padding:8px 12px; border-radius:999px; border:1px solid var(--border); background:#fff; cursor:pointer; font-weight:600; color:#355;
+    }
+    .tab[aria-selected="true"]{background: var(--brand-primary); color:#fff; border-color:#18619b}
+
+    .content{padding:14px}
+    .cards{display:grid; gap:12px; grid-template-columns: repeat(2, minmax(0,1fr))}
+    .card{
+      background:#fff; border:1px solid var(--border); border-radius:12px; padding:12px; box-shadow: var(--shadow);
+    }
+    .card h4{margin:0 0 8px; font-size:16px; color:#244}
+    .meta{font-size:12px; color:var(--muted)}
+
+    .table{
+      width:100%; border-collapse:separate; border-spacing:0; font-size:14px; overflow:hidden; border-radius:12px; border:1px solid var(--border);
+    }
+    .table thead th{background:#f6faff; text-align:left; padding:10px; border-bottom:1px solid var(--border); font-weight:700}
+    .table tbody td{padding:10px; border-bottom:1px solid #f2f5f9}
+    .badge{display:inline-block; padding:4px 8px; border-radius:999px; font-size:12px}
+    .badge.green{background:#eaf9f1; color:#1e824c; border:1px solid #c9f0dc}
+    .badge.orange{background:#fff6e9; color:#d98324; border:1px solid #ffe1b6}
+    .badge.blue{background:#eaf4ff; color:#1f78c1; border:1px solid #cfe5ff}
+
+    .actions-bar{
+      display:flex; gap:10px; padding:12px; border-top:1px solid var(--border); background:#fcfeff; border-radius:0 0 var(--radius) var(--radius);
+      position:sticky; bottom:0;
+    }
+
+    /* PDF theme enhancements */
+    .pdf-theme{
+      background: linear-gradient(135deg, #f0f8ff, #e6f2ff);
+      padding:18px; border-radius:12px; color:#2c3e50;
+    }
+    .pdf-theme h3, .pdf-theme h4{color:#1f78c1}
+    .pdf-badge{
+      display:inline-block; padding:4px 10px; border-radius:999px; background:#2ecc71; color:#fff; font-size:12px; margin-bottom:8px;
+    }
+
+    /* Chatbot */
+    .chat-fab{
+      position:fixed; right:20px; bottom:20px; z-index:60;
+      height:56px; width:56px; border-radius:50%; border:none; background: var(--brand-primary); color:#fff; cursor:pointer; box-shadow: var(--shadow);
+      display:flex; align-items:center; justify-content:center; font-weight:700;
+    }
+    .chat-panel{
+      position:fixed; right:20px; bottom:84px; width:360px; max-height:60vh; display:none; flex-direction:column; background:#fff; border:1px solid var(--border);
+      border-radius:16px; box-shadow: var(--shadow); overflow:hidden; z-index:60;
+    }
+    .chat-header{display:flex; align-items:center; justify-content:space-between; padding:10px 12px; background:#f6faff; border-bottom:1px solid var(--border)}
+    .chat-header h4{margin:0; font-size:14px; color:#244}
+    .chat-body{padding:10px; display:flex; flex-direction:column; gap:8px; overflow:auto}
+    .msg{max-width:80%; padding:8px 10px; border-radius:12px; border:1px solid var(--border); font-size:14px; line-height:1.35}
+    .msg.user{align-self:flex-end; background:#eaf4ff}
+    .msg.bot{align-self:flex-start; background:#f9fafc}
+    .chat-input{display:flex; gap:8px; padding:10px; border-top:1px solid var(--border); background:#fff}
+    .chat-input input{flex:1; padding:10px 12px; border:1px solid var(--border); border-radius:10px; outline:none}
+    .chat-input button{padding:10px 12px}
+
+    /* Responsive */
+    @media (max-width: 980px){
+      .dashboard{grid-template-columns: 1fr}
+      .doctor-grid{max-height:unset}
+      .cards{grid-template-columns:1fr}
+      .chat-panel{right:12px; width:92vw}
+    }
+  </style>
+
+  <!-- PDF library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js" defer></script>
 </head>
 <body>
-  <h1>Doctor Dashboard</h1>
-  
-  <!-- Example content -->
-  <p>Welcome, Doctor!</p>
 
-  <button id="logoutBtn">Logout</button>
+  <!-- Access guard as early as possible -->
+  <script>
+    if (!localStorage.getItem('loggedInUser')) {
+      window.location.replace('login.html');
+    }
+  </script>
+
+  <!-- Top bar -->
+  <div class="top-bar" role="banner">
+    <div class="brand" aria-label="MediConnect">
+      <img src="assets/logo.png" alt="MediConnect logo" class="logo"/>
+      <div class="title">MediConnect</div>
+    </div>
+    <div class="top-actions">
+      <div id="welcomeUser" class="welcome" aria-live="polite">Loading user…</div>
+      <button class="btn btn-danger" id="logoutBtn" aria-label="Logout">Logout</button>
+    </div>
+  </div>
+
+  <!-- Dashboard -->
+  <div class="dashboard">
+    <!-- Sidebar -->
+    <aside class="panel sidebar" aria-label="Doctors">
+      <h3>Doctors</h3>
+      <div id="doctorGrid" class="doctor-grid" role="list"></div>
+    </aside>
+
+    <!-- Main -->
+    <main class="panel main" role="main">
+      <div class="toolbar">
+        <div class="search" role="search">
+          <input id="searchDoctor" type="search" placeholder="Search doctor by name or specialty…" aria-label="Search doctors"/>
+          <button class="btn" id="clearSearch" aria-label="Clear search">Clear</button>
+        </div>
+        <div class="tabs" role="tablist" aria-label="Sections">
+          <button class="tab" role="tab" data-tab="appointments" aria-selected="true">Appointments</button>
+          <button class="tab" role="tab" data-tab="tests" aria-selected="false">Tests</button>
+          <button class="tab" role="tab" data-tab="reports" aria-selected="false">Reports</button>
+        </div>
+        <button class="btn btn-primary" id="btnDownload" aria-label="Download PDF">Download PDF</button>
+      </div>
+
+      <section id="contentSection" class="content" aria-live="polite">
+        <div class="cards">
+          <div class="card">
+            <h4>Overview</h4>
+            <div class="meta">Select a doctor to view detailed data.</div>
+          </div>
+          <div class="card">
+            <h4>Status</h4>
+            <div class="meta">Appointments, tests, and report summaries will appear here.</div>
+          </div>
+        </div>
+      </section>
+
+      <div class="actions-bar">
+        <button class="btn" id="btnAppointments">Appointments</button>
+        <button class="btn" id="btnTests">Tests</button>
+        <button class="btn" id="btnReports">Reports</button>
+      </div>
+    </main>
+  </div>
+
+  <!-- Chatbot -->
+  <button class="chat-fab" id="chatbotToggle" title="Ask MediConnect">AI</button>
+  <div class="chat-panel" id="chatbotPanel" role="dialog" aria-label="MediConnect Assistant" aria-modal="false">
+    <div class="chat-header">
+      <h4>MediConnect Assistant</h4>
+      <button class="btn" id="chatbotClose" aria-label="Close chat">Close</button>
+    </div>
+    <div class="chat-body" id="chatMessages"></div>
+    <div class="chat-input">
+      <input id="chatInput" type="text" placeholder="Ask about appointments, tests, or reports…" aria-label="Message"/>
+      <button class="btn btn-primary" id="chatSend">Send</button>
+    </div>
+  </div>
 
   <script>
-    // Route guard — if no logged in user, send to login
-    document.addEventListener('DOMContentLoaded', () => {
-      if (!localStorage.getItem('loggedInUser')) {
-        window.location.replace('login.html');
+    // Sample data
+    const doctors = [
+      { name: 'Dr. Zarrar Ahmed', specialty: 'Cardiologist' },
+      { name: 'Dr. Tahreem Ahmed', specialty: 'Neurologist' },
+      { name: 'Dr. Usman Ahmed', specialty: 'Dermatologist' },
+      { name: 'Dr. Ayesha Tariq', specialty: 'Pediatrician' },
+      { name: 'Dr. Kamran Raza', specialty: 'Orthopedic' },
+      { name: 'Dr. Nadia Shah', specialty: 'Psychiatrist' },
+      { name: 'Dr. Bilal Qureshi', specialty: 'ENT Specialist' },
+      { name: 'Dr. Hina Malik', specialty: 'Eye Specialist' },
+      { name: 'Dr. Usman Farooq', specialty: 'Gastroenterologist' },
+      { name: 'Dr. Farah Javed', specialty: 'Pulmonologist' }
+    ];
+
+    // Elements
+    const doctorGridEl = document.getElementById('doctorGrid');
+    const contentSectionEl = document.getElementById('contentSection');
+    const tabs = Array.from(document.querySelectorAll('.tab'));
+    const btnAppointments = document.getElementById('btnAppointments');
+    const btnTests = document.getElementById('btnTests');
+    const btnReports = document.getElementById('btnReports');
+    const btnDownload = document.getElementById('btnDownload');
+    const searchInput = document.getElementById('searchDoctor');
+    const clearSearchBtn = document.getElementById('clearSearch');
+    const welcomeEl = document.getElementById('welcomeUser');
+
+    let currentDoctorIndex = 0;
+    let currentTab = 'appointments';
+    let filteredDoctors = [...doctors];
+
+    // Welcome user
+    (function initUser(){
+      const email = localStorage.getItem('loggedInUser') || 'Doctor';
+      welcomeEl.textContent = `Welcome, ${email}`;
+      welcomeEl.title = email;
+    })();
+
+    // Render doctors
+    function renderDoctorGrid() {
+      doctorGridEl.innerHTML = '';
+      filteredDoctors.forEach((doc, idx) => {
+        const card = document.createElement('div');
+        const isActive = idx === currentDoctorIndex;
+        card.className = 'doctor-card' + (isActive ? ' active' : '');
+        card.setAttribute('role','button');
+        card.innerHTML = `
+          <div class="doc-name">${doc.name}</div>
+          <div class="doc-spec">${doc.specialty}</div>
+        `;
+        card.addEventListener('click', () => {
+          currentDoctorIndex = idx;
+          renderDoctorGrid();
+          renderContent();
+        });
+        doctorGridEl.appendChild(card);
+      });
+    }
+
+    // Search
+    function applySearch() {
+      const q = (searchInput.value || '').toLowerCase().trim();
+      filteredDoctors = doctors.filter(d =>
+        d.name.toLowerCase().includes(q) || d.specialty.toLowerCase().includes(q)
+      );
+      currentDoctorIndex = 0;
+      renderDoctorGrid();
+      renderContent();
+    }
+    searchInput.addEventListener('input', applySearch);
+    clearSearchBtn.addEventListener('click', () => {
+      searchInput.value = '';
+      applySearch();
+    });
+
+    // Render main content
+    function renderContent() {
+      const doc = filteredDoctors[currentDoctorIndex] || doctors[0];
+
+      let body = `
+        <div class="cards">
+          <div class="card">
+            <h4>${doc.name}</h4>
+            <div class="meta">Specialty: ${doc.specialty}</div>
+          </div>
+          <div class="card">
+            <h4>Summary</h4>
+            <div class="meta">Section: ${currentTab.toUpperCase()}</div>
+          </div>
+        </div>
+      `;
+
+      if (currentTab === 'appointments') {
+        body += `
+          <div class="card" style="margin-top:12px">
+            <h4>Appointments</h4>
+            <table class="table" aria-label="Appointments table">
+              <thead><tr><th>Patient</th><th>Date</th><th>Status</th></tr></thead>
+              <tbody>
+                <tr><td>Jane Cooper</td><td>2025-08-16 10:30</td><td><span class="badge blue">Scheduled</span></td></tr>
+                <tr><td>Esther Howard</td><td>2025-08-16 12:00</td><td><span class="badge green">Checked-in</span></td></tr>
+                <tr><td>Wade Warren</td><td>2025-08-17 09:15</td><td><span class="badge orange">Pending</span></td></tr>
+              </tbody>
+            </table>
+          </div>`;
+      } else if (currentTab === 'tests') {
+        body += `
+          <div class="card" style="margin-top:12px">
+            <h4>Tests</h4>
+            <table class="table" aria-label="Tests table">
+              <thead><tr><th>Test</th><th>Patient</th><th>Status</th></tr></thead>
+              <tbody>
+                <tr><td>Blood Panel</td><td>Robert Fox</td><td><span class="badge orange">In Lab</span></td></tr>
+                <tr><td>ECG</td><td>Floyd Miles</td><td><span class="badge blue">Scheduled</span></td></tr>
+                <tr><td>MRI</td><td>Annette Black</td><td><span class="badge green">Completed</span></td></tr>
+              </tbody>
+            </table>
+          </div>`;
+      } else if (currentTab === 'reports') {
+        body += `
+          <div class="card" style="margin-top:12px">
+            <h4>Reports</h4>
+            <table class="table" aria-label="Reports table">
+              <thead><tr><th>Report</th><th>Patient</th><th>Last Updated</th></tr></thead>
+              <tbody>
+                <tr><td>X-ray Chest</td><td>Guy Hawkins</td><td>2025-08-14</td></tr>
+                <tr><td>Derm Scan</td><td>Savannah Nguyen</td><td>2025-08-13</td></tr>
+                <tr><td>Allergy Panel</td><td>Brooklyn Simmons</td><td>2025-08-12</td></tr>
+              </tbody>
+            </table>
+          </div>`;
+      }
+
+      contentSectionEl.innerHTML = body;
+    }
+
+    // Tabs
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => t.setAttribute('aria-selected','false'));
+        tab.setAttribute('aria-selected','true');
+        currentTab = tab.dataset.tab;
+        renderContent();
+      });
+    });
+    btnAppointments.addEventListener('click', () => {
+      currentTab = 'appointments';
+      tabs.forEach(t => t.setAttribute('aria-selected', t.dataset.tab === 'appointments' ? 'true':'false'));
+      renderContent();
+    });
+    btnTests.addEventListener('click', () => {
+      currentTab = 'tests';
+      tabs.forEach(t => t.setAttribute('aria-selected', t.dataset.tab === 'tests' ? 'true':'false'));
+      renderContent();
+    });
+    btnReports.addEventListener('click', () => {
+      currentTab = 'reports';
+      tabs.forEach(t => t.setAttribute('aria-selected', t.dataset.tab === 'reports' ? 'true':'false'));
+      renderContent();
+    });
+
+    // PDF Download
+    btnDownload.addEventListener('click', () => {
+      const doc = filteredDoctors[currentDoctorIndex] || doctors[0];
+
+      // Apply colorful PDF theme
+      contentSectionEl.classList.add('pdf-theme');
+
+      // Dynamic badge
+      const badge = document.createElement('div');
+      badge.className = 'pdf-badge';
+      badge.textContent = `Section: ${currentTab.toUpperCase()} • ${doc.name}`;
+      contentSectionEl.prepend(badge);
+
+      const opt = {
+        margin: 0.4,
+        filename: `${doc.name.replace(/\s+/g,'_')}_${currentTab}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+      };
+
+      if (window.html2pdf) {
+        html2pdf().from(contentSectionEl).set(opt).save().then(() => {
+          contentSectionEl.classList.remove('pdf-theme');
+          badge.remove();
+        }).catch(() => {
+          contentSectionEl.classList.remove('pdf-theme');
+          badge.remove();
+          alert('PDF generation failed. Please try again.');
+        });
+      } else {
+        alert('PDF library not loaded.');
       }
     });
 
-    // Logout button logic
+    // Logout
     document.getElementById('logoutBtn').addEventListener('click', () => {
       localStorage.removeItem('loggedInUser');
       window.location.replace('login.html');
     });
+
+    // Chatbot UI
+    const fab = document.getElementById('chatbotToggle');
+    const panel = document.getElementById('chatbotPanel');
+    const closeBtn = document.getElementById('chatbotClose');
+    const chatInput = document.getElementById('chatInput');
+    const chatSend = document.getElementById('chatSend');
+    const chatMessages = document.getElementById('chatMessages');
+
+    function addMsg(text, who='bot'){
+      const div = document.createElement('div');
+      div.className = 'msg ' + (who==='user'?'user':'bot');
+      div.textContent = text;
+      chatMessages.appendChild(div);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+    function toggleChat(open){
+      panel.style.display = open ? 'flex' : 'none';
+      if(open) chatInput.focus();
+    }
+    fab.addEventListener('click', ()=> toggleChat(true));
+    closeBtn.addEventListener('click', ()=> toggleChat(false));
+    chatSend.addEventListener('click', handleChatSend);
+    chatInput.addEventListener('keydown', (e)=>{ if(e.key==='Enter'){ handleChatSend(); } });
+
+    async function handleChatSend(){
+      const text = (chatInput.value || '').trim();
+      if(!text) return;
+      addMsg(text, 'user');
+      chatInput.value='';
+      // Placeholder local response
+      addMsg('Thinking…', 'bot');
+
+      try{
+        // For now: simple inline mock response
+        // Later: call your Azure Function endpoint (see sendMessageToAzure)
+        const reply = await getLocalAssistantReply(text);
+        chatMessages.lastChild.textContent = reply;
+      }catch(err){
+        chatMessages.lastChild.textContent = 'Sorry, something went wrong.';
+      }
+    }
+    function getLocalAssistantReply(text){
+      // Simple heuristics for demo
+      const t = text.toLowerCase();
+      if (t.includes('appointment')) return Promise.resolve('To manage appointments, open the Appointments tab. You can export current view as PDF using Download PDF.');
+      if (t.includes('test')) return Promise.resolve('Tests are listed under the Tests tab. Status badges indicate where each test is in the pipeline.');
+      if (t.includes('report')) return Promise.resolve('Reports tab shows history and last updated times. Filter by doctor to narrow results.');
+      return Promise.resolve('I can help with appointments, tests, reports, and PDF export. What would you like to do?');
+    }
+
+    // Azure AI hook (future)
+    async function sendMessageToAzure(userText){
+      // Example pattern: route through your Azure Static Web Apps API
+      // return fetch('/api/chat', {
+      //   method: 'POST',
+      //   headers: { 'Content-Type': 'application/json' },
+      //   body: JSON.stringify({ message: userText })
+      // }).then(r => r.json());
+    }
+
+    // Init
+    renderDoctorGrid();
+    renderContent();
   </script>
 </body>
 </html>
